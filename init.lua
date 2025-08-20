@@ -72,6 +72,24 @@ vim.opt.mouse = "a"                                -- Enable mouse support
 vim.opt.clipboard:append("unnamedplus")            -- Use system clipboard
 vim.opt.modifiable = true                          -- Allow buffer modifications
 vim.opt.encoding = "UTF-8"                         -- Set encoding
+vim.keymap.set("n", "<leader>z", function()
+  if vim.opt.wrap:get() then
+    -- disable wrapping
+    vim.opt.wrap = false
+    vim.opt.linebreak = false
+    vim.opt.breakindent = false
+    vim.opt.showbreak = ""
+    print("Wrap disabled")
+  else
+    -- enable wrapping with nice settings
+    vim.opt.wrap = true
+    vim.opt.linebreak = true
+    vim.opt.breakindent = true
+    vim.opt.showbreak = "↳ "
+    print("Wrap enabled")
+  end
+end, { desc = "Toggle wrap with extras" })
+
 
 -- Cursor settings
 vim.opt.guicursor = "n-v-c:block,i-ci-ve:block,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175"
@@ -608,6 +626,40 @@ vim.keymap.set('n', '<leader>bd', smart_close_buffer, { desc = 'Smart close buff
 -- STATUSLINE
 -- ============================================================================
 
+-- decrease warning
+-- keep your preferred baseline display options
+local base_diag_opts = {
+  virtual_text = false,
+  signs = true,
+  underline = false,
+  update_in_insert = false,
+  severity_sort = true,
+}
+
+-- apply baseline (warnings ON by default)
+vim.diagnostic.config(base_diag_opts)
+
+-- state flag
+local warnings_enabled = true
+
+-- toggle command: when warnings_disabled -> only errors shown
+vim.api.nvim_create_user_command("DiagToggleWarnings", function()
+  warnings_enabled = not warnings_enabled
+
+  if warnings_enabled then
+    -- show all severities (errors + warnings + info)
+    vim.diagnostic.config(vim.tbl_extend("force", base_diag_opts, { severity = nil }))
+    print("Diagnostics: warnings ON (showing errors + warnings)")
+  else
+    -- show only errors (suppress warnings/info)
+    vim.diagnostic.config(vim.tbl_extend("force", base_diag_opts, {
+      severity = { min = vim.diagnostic.severity.ERROR }
+    }))
+    print("Diagnostics: warnings OFF (errors only)")
+  end
+end, { desc = "Toggle warnings off/on (errors remain shown)" })
+vim.keymap.set("n", "<leader>dw", ":DiagToggleWarnings<CR>", { noremap = true, silent = true })
+
 -- Git branch function
 local function git_branch()
   local branch = vim.fn.system("git branch --show-current 2>/dev/null | tr -d '\n'")
@@ -939,8 +991,15 @@ local on_attach = function(client, bufnr)
   -- ... any other keymaps you like
 end
 
--- Example: start other LSPs with lspconfig as usual:
-require('lspconfig').pyright.setup{ on_attach = on_attach }
+require('lspconfig').pyright.setup{
+  settings = {
+    python = {
+      analysis = {
+        extraPaths = { "./", "./src" }
+      }
+    }
+  }
+}
 require('lspconfig').bashls.setup{ on_attach = on_attach }
 
 -- Java: use nvim-jdtls (recommended) because eclipse.jdt.ls is a special server
