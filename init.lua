@@ -126,9 +126,9 @@ require("lazy").setup({
   "williamboman/mason.nvim",
   "williamboman/mason-lspconfig.nvim",
   "neovim/nvim-lspconfig",
-  "mfussenegger/nvim-jdtls",
+  -- "mfussenegger/nvim-jdtls",
   "nvim-treesitter/nvim-treesitter",
-  "p00f/nvim-ts-rainbow",                         -- rainbow parentheses
+   { "HiPhish/rainbow-delimiters.nvim" }, -- rainbow parentheses
   "windwp/nvim-ts-autotag",                       -- auto close & rename tags (html/jsx)
   'nvim-telescope/telescope.nvim',
   'nvim-telescope/telescope-file-browser.nvim',
@@ -982,7 +982,8 @@ end, { desc = 'Show LSP client info' })
 -- mason
 require("mason").setup()
 require("mason-lspconfig").setup({
-  ensure_installed = { "pylsp", "bashls", "jdtls" }, -- jdtls via mason (or install jdtls manually)
+  ensure_installed = { "pylsp", "bashls" },
+    exclude = { 'jdtls' },
 })
 
 -- general lsp handlers (attach function)
@@ -1004,39 +1005,45 @@ require('lspconfig').pyright.setup{
   }
 }
 require('lspconfig').bashls.setup{ on_attach = on_attach }
+require('lspconfig').lua_ls.setup{}
 
 -- Java: use nvim-jdtls (recommended) because eclipse.jdt.ls is a special server
 -- create ftplugin/java.lua or place in config and call start_or_attach on java files
 -- Minimal ftplugin/java.lua example:
 local home = vim.env.HOME
-local jdtls_ok, jdtls = pcall(require, 'jdtls')
-if jdtls_ok then
-  local workspace_dir = vim.fn.stdpath('data') .. '/jdtls-workspace/' .. vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
-  local config = {
-    cmd = { 'java', '-Declipse.application=org.eclipse.jdt.ls.core.id1', '-Dosgi.bundles.defaultStartLevel=4',
-            '-Declipse.product=org.eclipse.jdt.ls.core.product', '-Dlog.protocol=true', '-Dlog.level=ALL',
-            '-Xmx2G',
-            '--add-modules=ALL-SYSTEM', '--add-opens', 'java.base/java.util=ALL-UNNAMED',
-            '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-            '-jar', '/PATH/TO/jdtls/plugins/org.eclipse.equinox.launcher_*.jar',
-            '-configuration', '/PATH/TO/jdtls/config_linux', -- adjust for your OS
-            '-data', workspace_dir
-    },
-    root_dir = require('jdtls.setup').find_root({'.git', 'mvnw', 'gradlew'}),
-    settings = {
-      java = {
-        -- supply runtimes if needed
-        configuration = { runtimes = {
-          { name = "JavaSE-21", path = "/path/to/jdk-21", default = true }
-        } }
-      }
-    },
-    on_attach = on_attach
-  }
-
-  -- Start or attach jdtls when a java buffer opens:
-  jdtls.start_or_attach(config)
-end
+-- local jdtls_ok, jdtls = pcall(require, 'jdtls')
+-- if jdtls_ok then
+--     local root_dir = require('jdtls.setup').find_root({ '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' })
+--     if not root_dir then return end
+--     local workspace_dir = vim.fn.stdpath('data') .. '/jdtls-workspace/' .. vim.fn.fnamemodify(root_dir, ':p:h:t')
+--     local jdtls_base = vim.fn.stdpath('data') .. '/mason/packages/jdtls'
+--     local launcher = vim.fn.glob(jdtls_base .. '/plugins/org.eclipse.equinox.launcher_*.jar')
+--     local config_dir = jdtls_base .. '/config_linux'
+--   local config = {
+--     cmd = { 'java', '-Declipse.application=org.eclipse.jdt.ls.core.id1', '-Dosgi.bundles.defaultStartLevel=4',
+--             '-Declipse.product=org.eclipse.jdt.ls.core.product', '-Dlog.protocol=true', '-Dlog.level=ALL',
+--             '-Xmx2G',
+--             '--add-modules=ALL-SYSTEM', '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+--             '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+--             '-jar', launcher,
+--             '-configuration', config_dir, -- adjust for your OS
+--             '-data', workspace_dir
+--     },
+--     root_dir = require('jdtls.setup').find_root({'.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle'}),
+--     settings = {
+--       java = {
+--         -- supply runtimes if needed
+--         configuration = { runtimes = {
+--           { name = "JavaJDK-24", path = "/usr/lib/jvm/jdk-24.0.2-oracle-x64", default = true }
+--         } }
+--       }
+--     },
+--     on_attach = on_attach
+--   }
+--
+--   -- Start or attach jdtls when a java buffer opens:
+--   jdtls.start_or_attach(config)
+-- end
 
 
 require('nvim-treesitter.configs').setup {
