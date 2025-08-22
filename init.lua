@@ -89,7 +89,10 @@ vim.keymap.set("n", "<leader>z", function()
     print("Wrap enabled")
   end
 end, { desc = "Toggle wrap with extras" })
-
+-- ctrl + / to Toggle current line comment
+vim.keymap.set("n", "<C-_>", "gcc", { remap = true, silent = true })
+-- ctrl + / to Toggle selection comment (visual mode)
+vim.keymap.set("x", "<C-_>", "gc",  { remap = true, silent = true })
 
 -- Cursor settings
 vim.opt.guicursor = "n-v-c:block,i-ci-ve:block,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175"
@@ -629,10 +632,10 @@ vim.keymap.set('n', '<leader>bd', smart_close_buffer, { desc = 'Smart close buff
 -- decrease warning
 -- keep your preferred baseline display options
 local base_diag_opts = {
-  virtual_text = false,
+  virtual_text = true,
   signs = true,
-  underline = false,
-  update_in_insert = false,
+  underline = true,
+  update_in_iperimetersert = true,
   severity_sort = true,
 }
 
@@ -658,7 +661,7 @@ vim.api.nvim_create_user_command("DiagToggleWarnings", function()
     print("Diagnostics: warnings OFF (errors only)")
   end
 end, { desc = "Toggle warnings off/on (errors remain shown)" })
-vim.keymap.set("n", "<leader>dw", ":DiagToggleWarnings<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>dp", ":DiagToggleWarnings<CR>", { noremap = true, silent = true })
 
 -- Git branch function
 local function git_branch()
@@ -1080,3 +1083,4 @@ vim.keymap.set('n', '<leader>ff', telescope.find_files, { desc = "Find files" })
 vim.keymap.set('n', '<leader>fg', telescope.live_grep, { desc = "Live grep" })
 vim.keymap.set('n', '<leader>fb', telescope.buffers, { desc = "Switch buffers" })
 vim.keymap.set('n', '<leader>fs', telescope.lsp_workspace_symbols, { desc = "Symbols" })
+
