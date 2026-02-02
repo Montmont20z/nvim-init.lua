@@ -76,8 +76,15 @@ if vim.g.vscode then
   vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
   vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down (centered)" })
   vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up (centered)" })
-  vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
   vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines and keep cursor position" })
+  
+  -- Delete/Change without yanking (using black hole register)
+  vim.keymap.set({ "n", "v" }, "d", '"_d', { desc = "Delete without yanking" })
+  vim.keymap.set({ "n", "v" }, "D", '"_D', { desc = "Delete to end of line without yanking" })
+  vim.keymap.set({ "n", "v" }, "c", '"_c', { desc = "Change without yanking" })
+  vim.keymap.set({ "n", "v" }, "C", '"_C', { desc = "Change to end of line without yanking" })
+  vim.keymap.set("n", "x", '"_x', { desc = "Delete char without yanking" })
+  vim.keymap.set({ "n", "v" }, "<leader>d", "d", { desc = "Delete with yanking" })
   
   -- Move lines up/down
   vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { desc = "Move line down" })
@@ -391,8 +398,14 @@ vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search result (centered)" }
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down (centered)" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up (centered)" })
 
--- Delete without yanking
-vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
+-- Delete/Change without yanking (using black hole register)
+vim.keymap.set({ "n", "v" }, "d", '"_d', { desc = "Delete without yanking" })
+vim.keymap.set({ "n", "v" }, "D", '"_D', { desc = "Delete to end of line without yanking" })
+vim.keymap.set({ "n", "v" }, "c", '"_c', { desc = "Change without yanking" })
+vim.keymap.set({ "n", "v" }, "C", '"_C', { desc = "Change to end of line without yanking" })
+vim.keymap.set("n", "x", '"_x', { desc = "Delete char without yanking" })
+-- Delete with yanking
+vim.keymap.set({ "n", "v" }, "<leader>d", "d", { desc = "Delete with yanking" })
 
 -- Buffer navigation
 vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
