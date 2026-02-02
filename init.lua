@@ -3,6 +3,104 @@
 -- author: Radley E. Sidwell-lewis
 -- ================================================================================================
 
+-- Check if running in VSCode
+if vim.g.vscode then
+  -- ============================================================================
+  -- VSCODE NEOVIM SETTINGS
+  -- ============================================================================
+  
+  -- Basic settings that work in VSCode
+  vim.opt.clipboard:append("unnamedplus")
+  vim.opt.ignorecase = true
+  vim.opt.smartcase = true
+  vim.opt.hlsearch = false
+  vim.opt.incsearch = true
+  
+  -- Key mappings
+  vim.g.mapleader = " "
+  vim.g.maplocalleader = " "
+  
+  -- make Space do nothing
+  vim.keymap.set({'n','v','o'}, '<Space>', '<Nop>', { silent = true })
+  
+  -- VSCode-specific commands using vscode.call
+  local vscode = require('vscode-neovim')
+  
+  -- File operations
+  vim.keymap.set('n', '<leader>ff', function() vscode.call('workbench.action.quickOpen') end, { desc = 'Quick open file' })
+  vim.keymap.set('n', '<leader>fg', function() vscode.call('workbench.action.findInFiles') end, { desc = 'Find in files' })
+  vim.keymap.set('n', '<leader>fb', function() vscode.call('workbench.action.showAllEditors') end, { desc = 'Show all editors' })
+  vim.keymap.set('n', '<leader>e', function() vscode.call('workbench.action.toggleSidebarVisibility') end, { desc = 'Toggle sidebar' })
+  vim.keymap.set('n','<leader>fr', function() vscode.call("actions.find") end, { desc = "VSCode Find" })
+  
+  -- LSP operations
+  vim.keymap.set('n', 'gD', function() vscode.call('editor.action.revealDefinition') end, { desc = 'Go to definition' })
+  vim.keymap.set('n', 'gr', function() vscode.call('editor.action.goToReferences') end, { desc = 'Go to references' })
+  vim.keymap.set('n', 'gi', function() vscode.call('editor.action.goToImplementation') end, { desc = 'Go to implementation' })
+  vim.keymap.set('n', 'K', function() vscode.call('editor.action.showHover') end, { desc = 'Show hover' })
+  vim.keymap.set('n', '<leader>ca', function() vscode.call('editor.action.quickFix') end, { desc = 'Code action' })
+  vim.keymap.set('n', '<leader>rn', function() vscode.call('editor.action.rename') end, { desc = 'Rename' })
+  vim.keymap.set('n', '<leader>fm', function() vscode.call('editor.action.formatDocument') end, { desc = 'Format document' })
+  
+  -- Diagnostics
+  vim.keymap.set('n', '<leader>nd', function() vscode.call('editor.action.marker.next') end, { desc = 'Next diagnostic' })
+  vim.keymap.set('n', '<leader>pd', function() vscode.call('editor.action.marker.prev') end, { desc = 'Previous diagnostic' })
+  vim.keymap.set('n', '<leader>do', function() vscode.call('editor.action.showHover') end, { desc = 'Show diagnostic' })
+  
+  -- Tab/Editor management
+  vim.keymap.set('n', '<leader>tn', function() vscode.call('workbench.action.files.newUntitledFile') end, { desc = 'New file' })
+  vim.keymap.set('n', '<leader>tx', function() vscode.call('workbench.action.closeActiveEditor') end, { desc = 'Close editor' })
+  vim.keymap.set('n', '<S-l>', function() vscode.call('workbench.action.nextEditor') end, { desc = 'Next editor' })
+  vim.keymap.set('n', '<S-h>', function() vscode.call('workbench.action.previousEditor') end, { desc = 'Previous editor' })
+  
+  -- Window navigation
+  vim.keymap.set('n', '<C-h>', function() vscode.call('workbench.action.navigateLeft') end, { desc = 'Navigate left' })
+  vim.keymap.set('n', '<C-j>', function() vscode.call('workbench.action.navigateDown') end, { desc = 'Navigate down' })
+  vim.keymap.set('n', '<C-k>', function() vscode.call('workbench.action.navigateUp') end, { desc = 'Navigate up' })
+  vim.keymap.set('n', '<C-l>', function() vscode.call('workbench.action.navigateRight') end, { desc = 'Navigate right' })
+  
+  -- Split windows
+  vim.keymap.set('n', '<leader>sv', function() vscode.call('workbench.action.splitEditorRight') end, { desc = 'Split right' })
+  vim.keymap.set('n', '<leader>sh', function() vscode.call('workbench.action.splitEditorDown') end, { desc = 'Split down' })
+  
+  -- Comments (VSCode handles these natively)
+  vim.keymap.set('n', '<C-_>', function() vscode.call('editor.action.commentLine') end, { desc = 'Toggle comment' })
+  vim.keymap.set('x', '<C-_>', function() vscode.call('editor.action.commentLine') end, { desc = 'Toggle comment' })
+  
+  -- Terminal
+  vim.keymap.set('n', '<leader>t', function() vscode.call('workbench.action.terminal.toggleTerminal') end, { desc = 'Toggle terminal' })
+  
+  -- Common editing commands
+  vim.keymap.set("n", "<leader>c", ":nohlsearch<CR>", { desc = "Clear search highlights" })
+  vim.keymap.set("n", "n", "nzzzv", { desc = "Next search result (centered)" })
+  vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
+  vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down (centered)" })
+  vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up (centered)" })
+  vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
+  vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines and keep cursor position" })
+  
+  -- Move lines up/down
+  vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { desc = "Move line down" })
+  vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { desc = "Move line up" })
+  vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+  vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+  
+  -- Better indenting in visual mode
+  vim.keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
+  vim.keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
+  
+  -- Use vscode find
+  -- vim.keymap.set("n","<C-f>", function() vscode.call("actions.find") end, { desc = "VSCode Find" })
+
+  -- vim.keymap.del("n", "<C-f>")
+
+
+else
+  -- ============================================================================
+  -- STANDALONE NEOVIM SETTINGS
+  -- ============================================================================
+
+
 -- theme & transparency
 vim.cmd("colorscheme unokai")
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
@@ -1090,4 +1188,7 @@ vim.keymap.set('n', '<leader>ff', telescope.find_files, { desc = "Find files" })
 vim.keymap.set('n', '<leader>fg', telescope.live_grep, { desc = "Live grep" })
 vim.keymap.set('n', '<leader>fb', telescope.buffers, { desc = "Switch buffers" })
 vim.keymap.set('n', '<leader>fs', telescope.lsp_workspace_symbols, { desc = "Symbols" })
+
+
+end 
 
